@@ -16,6 +16,7 @@ database1
 hive> USE database1;
 OK
 ```
+[create database reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-Create/Drop/Alter/UseDatabase)
 <br>
 
 **Create an Internal(Managed) Table**
@@ -74,5 +75,7 @@ hive> exit;
 Found 1 items
 drwxrwxrwx   - cloudera supergroup          0 2024-03-29 04:01 /user/hive/warehouse/database1.db/department_data
 ```
+[create table reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-CreateTableCreate/Drop/TruncateTable)
 <br>
+
 
