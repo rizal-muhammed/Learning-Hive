@@ -1,6 +1,7 @@
 # Basic Hive Commands
 
 **Create a Database**
+[create database reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-Create/Drop/Alter/UseDatabase)
 ```
 [cloudera@quickstart ~]$ hive
 hive> CREATE DATABASE IF NOT EXISTS database1
@@ -16,10 +17,10 @@ database1
 hive> USE database1;
 OK
 ```
-[create database reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-Create/Drop/Alter/UseDatabase)
 <br>
 
 **Create an Internal(Managed) Table**
+[create table reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-CreateTableCreate/Drop/TruncateTable)
 ```
 hive> CREATE TABLE IF NOT EXISTS department_data
     > (
@@ -75,7 +76,78 @@ hive> exit;
 Found 1 items
 drwxrwxrwx   - cloudera supergroup          0 2024-03-29 04:01 /user/hive/warehouse/database1.db/department_data
 ```
-[create table reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+ddl#LanguageManualDDL-CreateTableCreate/Drop/TruncateTable)
 <br>
 
+**Loading data into table from local**
+[Load data local reference](https://cwiki.apache.org/confluence/display/hive/languagemanual+dml#LanguageManualDML-Loadingfilesintotables)
+```
+[cloudera@quickstart ~]$ hive
+hive> USE database1;
+hive> SHOW TABLES;
+OK
+department_data
+
+hive> LOAD DATA LOCAL INPATH 'file:///tmp/Hive/department_data.csv'
+    > INTO TABLE department_data;
+
+hive> SET hive.cli.print.header=true;
+hive> SELECT * FROM department_data LIMIT 10;
+OK
+department_data.dept_id	department_data.dept_name	department_data.manager_id	department_data.salary
+10	Administration	200	1700
+20	Marketing	201	1800
+30	Purchasing	114	1700
+40	Human Resources	203	2400
+50	Shipping	121	1500
+60	IT	103	1400
+70	Public Relations	204	2700
+80	Sales	145	2500
+90	Executive	100	1700
+100	Finance	108	1700
+```
+<br>
+
+Similarly we can load data into internal table from hdfs location as follows  
+Instead of exact path to file, path to folder needs to be provided, since the file can be multipart or there can be multiple files.  
+**copy file/files to hdfs location**
+```
+[cloudera@quickstart ~]$ hadoop fs -mkdir /tmp/Hive
+[cloudera@quickstart ~]$ hadoop fs -put /tmp/Hive/department_data.csv /tmp/Hive
+```
+**load data into table from hdfs location**
+```
+[cloudera@quickstart ~]$ hive
+hive> USE database1;
+
+hive> CREATE TABLE IF NOT EXISTS department_data_from_hdfs
+    > (
+    >      dept_id INT,
+    >     dept_name STRING,
+    >      manager_id INT,
+    >      salary INT
+    > )
+    > COMMENT 'Information about department data will loaded from hdfs, to this table'
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ',';
+OK
+hive> LOAD DATA INPATH '/tmp/Hive/'
+    > INTO TABLE department_data_from_hdfs;
+
+hive> set hive.cli.print.header = true;
+hive> SELECT * FROM department_data_from_hdfs
+    > LIMIT 10;
+OK
+department_data_from_hdfs.dept_id	department_data_from_hdfs.dept_name	department_data_from_hdfs.manager_id	department_data_from_hdfs.salary
+10	Administration	200	1700
+20	Marketing	201	1800
+30	Purchasing	114	1700
+40	Human Resources	203	2400
+50	Shipping	121	1500
+60	IT	103	1400
+70	Public Relations	204	2700
+80	Sales	145	2500
+90	Executive	100	1700
+100	Finance	108	1700
+```
+<br>
 
