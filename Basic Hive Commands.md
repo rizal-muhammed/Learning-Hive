@@ -108,7 +108,7 @@ department_data.dept_id	department_data.dept_name	department_data.manager_id	dep
 <br>
 
 Similarly we can load data into internal table from hdfs location as follows  
-Instead of exact path to file, path to folder needs to be provided, since the file can be multipart or there can be multiple files.  
+  
 **copy file/files to hdfs location**
 ```
 [cloudera@quickstart ~]$ hadoop fs -mkdir /tmp/Hive
@@ -148,6 +148,47 @@ department_data_from_hdfs.dept_id	department_data_from_hdfs.dept_name	department
 80	Sales	145	2500
 90	Executive	100	1700
 100	Finance	108	1700
+```
+<br>
+
+## Creating External Table and pointing data to it
+copy data into hdfs location  
+create external table, mentioning this hdfs location  
+```
+[cloudera@quickstart ~]$ hadoop fs -put /tmp/Hive/department_data.csv /tmp/Hive/
+[cloudera@quickstart ~]$ hive
+
+Logging initialized using configuration in file:/etc/hive/conf.dist/hive-log4j.properties
+WARNING: Hive CLI is deprecated and migration to Beeline is recommended.
+hive> USE database1;
+OK
+Time taken: 0.441 seconds
+hive> SHOW TABLES;
+OK
+department_data
+department_data_from_hdfs
+Time taken: 0.295 seconds, Fetched: 2 row(s)
+hive> CREATE EXTERNAL TABLE IF NOT EXISTS department_data_external (
+    > dept_id INT,
+    > dept_name STRING,
+    > manager_id INT,
+    > salary INT
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > LOCATION '/tmp/Hive/';
+OK
+Time taken: 0.18 seconds
+hive> set hive.cli.print.header = true;
+hive> select * from department_data_external limit 5;
+OK
+department_data_external.dept_id	department_data_external.dept_name	department_data_external.manager_id	department_data_external.salary
+10	Administration	200	1700
+20	Marketing	201	1800
+30	Purchasing	114	1700
+40	Human Resources	203	2400
+50	Shipping	121	1500
+Time taken: 0.462 seconds, Fetched: 5 row(s)
 ```
 <br>
 
