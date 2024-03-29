@@ -248,3 +248,30 @@ Amit	4	true
 Sumit	5	true
 Rohit	3	false
 ```
+<br>
+
+**Dealing with Map data**
+```
+hive> CREATE TABLE IF NOT EXISTS employee_map_table (
+    > id INT,
+    > name STRING,
+    > details MAP<STRING, STRING>
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > COLLECTION ITEMS TERMINATED BY '|'
+    > MAP KEYS TERMINATED BY ':';
+OK
+Time taken: 0.198 seconds
+hive> LOAD DATA LOCAL INPATH 'file:///tmp/Hive/map_data.csv'
+    > INTO TABLE employee_map_table;
+hive> set hive.cli.print.header = true;
+hive> select name, details['age'] as age,
+    > details['gender'] as gender
+    > from employee_map_table
+    > limit 5;
+OK
+name	age	gender
+Amit	21	M
+Mansi	23	F
+```
