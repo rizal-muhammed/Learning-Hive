@@ -192,3 +192,59 @@ Time taken: 0.462 seconds, Fetched: 5 row(s)
 ```
 <br>
 
+**Dealing with collection items in Hive**
+```
+[cloudera@quickstart Data]$ hive
+hive> use database1;
+OK
+Time taken: 0.632 seconds
+hive> CREATE TABLE IF NOT EXISTS employee (
+    > id INT,
+    > name STRING,
+    > skills ARRAY<STRING>
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > COLLECTION ITEMS TERMINATED BY ':'
+    > ;
+OK
+Time taken: 1.109 seconds
+hive> LOAD DATA LOCAL INPATH 'file:///tmp/Hive/array_data.csv'
+    > INTO TABLE employee;
+Loading data to table database1.employee
+Table database1.employee stats: [numFiles=1, totalSize=108]
+OK
+Time taken: 1.364 seconds
+hive> set hive.cli.print.header = true;
+hive> select * from employee limit 5
+    > ;
+OK
+employee.id	employee.name	employee.skills
+101	Amit	["Hadoop","Hive","Spark","Big-Data"]
+102	Sumit	["Hive","Ozzie","Hadoop","Spark","Storm"]
+103	Rohit	["Kafka","Cassandra","Hbase"]
+
+hive> select name, skills[0] as prime_skill
+    > from employee
+    > limit 5;
+OK
+name	prime_skill
+Amit	Hadoop
+Sumit	Hive
+Rohit	Kafka
+```
+<br>
+
+**collection functions**  
+[collection functions reference](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+UDF#LanguageManualUDF-CollectionFunctions)  
+example:  
+```
+hive> select name, size(skills) as num_of_skills, array_contains(skills, 'Hadoop') as knows_hadoop
+    > from employee
+    > limit 5;
+OK
+name	num_of_skills	knows_hadoop
+Amit	4	true
+Sumit	5	true
+Rohit	3	false
+```
