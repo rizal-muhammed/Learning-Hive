@@ -311,3 +311,18 @@ hive> CREATE TABLE IF NOT EXISTS employee_pq
 
 hive> select * from employee_pq limit 5;
 ```
+
+**Creating a table and storing as ORC, inserting data into it**
+```
+hive> CREATE TABLE IF NOT EXISTS employee_orc (
+    > id INT,
+    > name STRING,
+    > age INT,
+    > designation STRING
+    > )
+    > COMMENT 'Stored as ORC'
+    > STORED AS ORC;
+
+hive> INSERT INTO employee_orc
+    > SELECT * FROM employee_txt;
+```
