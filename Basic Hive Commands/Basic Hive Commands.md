@@ -275,3 +275,39 @@ name	age	gender
 Amit	21	M
 Mansi	23	F
 ```
+<br>
+
+<hr>
+
+**Creating a hive table and storing as parquet**
+Suppose we have the following data employee_data.csv
+```
+id,name,age,designation
+1,John,25,Data Engineer
+2,Alice,30,Software Engineer
+3,Bob,28,Project Manager
+4,Sarah,35,Tester
+5,Michael,39,Database Administrator
+```
+We can create a hive table and store as parqet as follows
+```
+hive> USE employee_db;
+
+hive> CREATE TABLE IF NOT EXISTS employee_txt (
+    > id INT,
+    > name STRING,
+    > age INT,
+    > designation STRING
+    > )
+    > ROW FORMAT DELIMITED
+    > FIELDS TERMINATED BY ','
+    > TBLPROPERTIES("skip.header.line.count"="1");
+
+hive> LOAD DATA LOCAL INPATH 'file:///tmp/Hive/employee_data.csv'
+    > INTO TABLE employee_txt;
+
+hive> CREATE TABLE IF NOT EXISTS employee_pq
+    > AS SELECT * FROM employee_txt;
+
+hive> select * from employee_pq limit 5;
+```
